@@ -1,5 +1,6 @@
 
 
+
 # Dockerfile para Laravel con Apache y SQLite
 FROM php:8.2-apache
 
@@ -18,17 +19,21 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copia el contenido del proyecto Laravel
 COPY . /var/www/html
 
-RUN composer install --no-dev --optimize-autoloader
-
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Cambia el DocumentRoot de Apache a /var/www/html/public
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 # Habilita mod_rewrite para Laravel
 RUN a2enmod rewrite
 
 # Configura Apache para permitir URLs amigables
 RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+RUN composer install --no-dev --optimize-autoloader
+
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
 
