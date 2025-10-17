@@ -41,4 +41,5 @@ RUN mkdir -p /var/www/html/database \
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+# Ejecuta migraciones antes de iniciar Apache
+CMD php artisan migrate --force && apache2-foreground
