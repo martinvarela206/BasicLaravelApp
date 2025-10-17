@@ -1,6 +1,7 @@
 
-# Dockerfile para Laravel con PHP-FPM y SQLite
-FROM php:8.2-fpm
+
+# Dockerfile para Laravel con Apache y SQLite
+FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -15,14 +16,20 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-COPY . /var/www
+COPY . /var/www/html
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-EXPOSE 9000
+# Habilita mod_rewrite para Laravel
+RUN a2enmod rewrite
 
-CMD ["php-fpm"]
+# Configura Apache para permitir URLs amigables
+RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
