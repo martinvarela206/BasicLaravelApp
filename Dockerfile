@@ -43,3 +43,16 @@ EXPOSE 80
 
 # Ejecuta migraciones antes de iniciar Apache
 CMD php artisan migrate --force && apache2-foreground
+
+## EN server con docker hay que ejecutar:
+        # docker build -t laravel-sqlite-apache .
+        # docker run -p 8080:80 laravel-sqlite-apache
+
+## En ssh del server, para ver los dockers corriendo:
+        # docker ps
+## Eliminar un docker:
+##       docker stop laravel_app
+##       docker rm laravel_app
+## Tambien se puede usar rmi y el id del contenedor
+## Para ver las imagenes es docker images
+## Para ver el historial de comando en ssh es history
